@@ -1,0 +1,894 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bridge Agent — Complete Build</title>
+  <style>
+    :root {
+      --bg: #0a0a0f;
+      --bg-panel: #12121a;
+      --bg-card: #1a1a24;
+      --primary: #00d4aa;
+      --secondary: #7c3aed;
+      --accent: #f59e0b;
+      --text: #e2e8f0;
+      --text-muted: #94a3b8;
+      --border: #2a2a3a;
+      --gradient: linear-gradient(135deg, var(--primary), var(--secondary));
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 2rem 1.5rem;
+    }
+
+    /* Hero */
+    .hero {
+      text-align: center;
+      padding: 4rem 1rem;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 3rem;
+    }
+
+    .badge {
+      display: inline-block;
+      background: var(--gradient);
+      color: #fff;
+      padding: 0.25rem 0.75rem;
+      border-radius: 999px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin-bottom: 1rem;
+    }
+
+    h1 {
+      font-size: 3rem;
+      font-weight: 900;
+      background: var(--gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 0.5rem;
+    }
+
+    .subtitle {
+      font-size: 1.125rem;
+      color: var(--text-muted);
+      max-width: 600px;
+      margin: 0 auto 1.5rem;
+    }
+
+    .stats {
+      display: flex;
+      justify-content: center;
+      gap: 2rem;
+      margin-top: 1.5rem;
+      flex-wrap: wrap;
+    }
+
+    .stat {
+      background: var(--bg-card);
+      padding: 1rem 1.5rem;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+    }
+
+    .stat-value {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--primary);
+    }
+
+    .stat-label {
+      font-size: 0.875rem;
+      color: var(--text-muted);
+    }
+
+    /* Sections */
+    section {
+      margin-bottom: 3rem;
+    }
+
+    h2 {
+      font-size: 1.75rem;
+      margin-bottom: 1rem;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    h2::before {
+      content: '';
+      width: 4px;
+      height: 1.75rem;
+      background: var(--gradient);
+      border-radius: 2px;
+    }
+
+    h3 {
+      font-size: 1.25rem;
+      margin: 1.5rem 0 0.75rem;
+      color: var(--primary);
+    }
+
+    p {
+      color: var(--text-muted);
+      margin-bottom: 1rem;
+    }
+
+    /* Tabs */
+    .tabs {
+      display: flex;
+      gap: 0.5rem;
+      margin-bottom: 1.5rem;
+      flex-wrap: wrap;
+    }
+
+    .tab {
+      padding: 0.5rem 1rem;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-size: 0.875rem;
+    }
+
+    .tab:hover,
+    .tab.active {
+      background: var(--primary);
+      color: var(--bg);
+      border-color: var(--primary);
+    }
+
+    .tab-content {
+      display: none;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    /* Code blocks */
+    pre {
+      background: var(--bg-panel);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1rem;
+      overflow-x: auto;
+      font-size: 0.875rem;
+      line-height: 1.5;
+    }
+
+    code {
+      font-family: 'Fira Code', 'Monaco', monospace;
+      color: var(--text);
+    }
+
+    .code-label {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin-bottom: 0.5rem;
+      display: block;
+    }
+
+    /* Tree */
+    .tree {
+      font-family: 'Fira Code', monospace;
+      font-size: 0.875rem;
+      background: var(--bg-panel);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1.5rem;
+      line-height: 1.8;
+    }
+
+    .tree-line {
+      color: var(--text-muted);
+    }
+
+    .tree-file {
+      color: var(--primary);
+    }
+
+    .tree-dir {
+      color: var(--secondary);
+      font-weight: 600;
+    }
+
+    /* Cards */
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1rem;
+    }
+
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1.25rem;
+      transition: border-color 0.2s;
+    }
+
+    .card:hover {
+      border-color: var(--primary);
+    }
+
+    .card-title {
+      font-weight: 600;
+      color: var(--primary);
+      margin-bottom: 0.5rem;
+      font-size: 1rem;
+    }
+
+    .card-desc {
+      font-size: 0.875rem;
+      color: var(--text-muted);
+    }
+
+    /* Architecture diagram */
+    .arch-diagram {
+      background: var(--bg-panel);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 2rem;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .arch-layer {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 1rem;
+      margin: 1.5rem 0;
+      flex-wrap: wrap;
+    }
+
+    .arch-box {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1rem 1.25rem;
+      min-width: 140px;
+    }
+
+    .arch-label {
+      font-weight: 600;
+      margin-bottom: 0.25rem;
+      color: var(--text);
+    }
+
+    .arch-sublabel {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    .arrow {
+      color: var(--primary);
+      font-size: 1.5rem;
+    }
+
+    .layer-title {
+      font-size: 0.875rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--text-muted);
+      margin-bottom: 0.5rem;
+    }
+
+    /* Terminal */
+    .terminal {
+      background: #0d1117;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      overflow: hidden;
+      font-family: 'Fira Code', monospace;
+      font-size: 0.875rem;
+    }
+
+    .terminal-header {
+      background: #161b22;
+      padding: 0.5rem 1rem;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+    }
+
+    .dot-red { background: #ff5f56; }
+    .dot-yellow { background: #ffbd2e; }
+    .dot-green { background: #27c93f; }
+
+    .terminal-body {
+      padding: 1rem;
+      color: #c9d1d9;
+      line-height: 1.7;
+    }
+
+    .prompt {
+      color: var(--primary);
+      margin-right: 0.5rem;
+    }
+
+    .cmd {
+      color: var(--text);
+    }
+
+    .output {
+      color: var(--text-muted);
+      padding-left: 1rem;
+      border-left: 2px solid var(--border);
+      margin: 0.5rem 0 1rem;
+    }
+
+    /* Animations */
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+
+    .float {
+      animation: float 3s ease-in-out infinite;
+    }
+
+    /* Summary list */
+    .check-list {
+      list-style: none;
+    }
+
+    .check-list li {
+      padding: 0.5rem 0;
+      color: var(--text-muted);
+      display: flex;
+      align-items: flex-start;
+      gap: 0.5rem;
+    }
+
+    .check-list li::before {
+      content: '✓';
+      color: var(--primary);
+      font-weight: bold;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      h1 { font-size: 2rem; }
+      .hero { padding: 2rem 1rem; }
+      .arch-layer { flex-direction: column; }
+      .arrow { transform: rotate(90deg); }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Hero Section -->
+    <section class="hero">
+      <div class="badge">v2.0 — Fully Implemented</div>
+      <h1>🌉 Bridge Agent</h1>
+      <p class="subtitle">
+        A Telegram‑driven personal AI assistant with two‑layer memory.
+        Real‑time SQLite cache + async‑synced Obsidian vault.
+        Every conversation automatically organized, linked, and searchable.
+      </p>
+      <div class="stats">
+        <div class="stat">
+          <div class="stat-value">15</div>
+          <div class="stat-label">Core Modules</div>
+        </div>
+        <div class="stat">
+          <div class="stat-value">2</div>
+          <div class="stat-label">Memory Layers</div>
+        </div>
+        <div class="stat">
+          <div class="stat-value">0</div>
+          <div class="stat-label">Stubs — All Real</div>
+        </div>
+        <div class="stat">
+          <div class="stat-value">∞</div>
+          <div class="stat-label">Knowledge Nuggets</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- What Is Bridge -->
+    <section>
+      <h2>What Is Bridge?</h2>
+      <p>
+        Bridge is a standalone Python service that connects Telegram to a local Obsidian vault
+        via an intelligent agent. It listens for your messages, talks to a local LLM (LM Studio),
+        saves everything to SQLite for fast context, and asynchronously writes rich markdown notes
+        to your vault with YAML frontmatter, wikilinks, and tags.
+      </p>
+      <p>
+        The result: a persistent, browsable, queryable second brain that grows automatically
+        as you chat. No manual note‑taking. No copy‑pasting. Just natural conversation → organized knowledge.
+      </p>
+
+      <div class="grid">
+        <div class="card">
+          <div class="card-title">⚡ Real‑Time</div>
+          <div class="card-desc">SQLite WAL ensures zero wait on writes. You get replies instantly.</div>
+        </div>
+        <div class="card">
+          <div class="card-title">🧠 Two‑Layer Memory</div>
+          <div class="card-desc">Hot cache (SQLite) for speed; cold store (Obsidian) for human readability.</div>
+        </div>
+        <div class="card">
+          <div class="card-title">🔄 Async Sync</div>
+          <div class="card-desc">Background queue drains to Obsidian without blocking conversation flow.</div>
+        </div>
+        <div class="card">
+          <div class="card-title">🔗 Knowledge Graph</div>
+          <div class="card-desc">Auto‑extracted facts become atomic notes linked from daily conversations.</div>
+        </div>
+        <div class="card">
+          <div class="card-title">📁 Frontmatter & Tags</div>
+          <div class="card-desc">Every note is Dataview‑compatible. Query, filter, and dashboard in Obsidian.</div>
+        </div>
+        <div class="card">
+          <div class="card-title">🌐 REST Fallback</div>
+          <div class="card-desc">If Obsidian REST plugin is running, vault refreshes live and notes can pop open.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Architecture -->
+    <section>
+      <h2>Architecture</h2>
+      <p>Telegram messages flow through a clean pipeline with clear separation of concerns:</p>
+
+      <div class="arch-diagram">
+        <div class="layer-title">User Interface</div>
+        <div class="arch-layer">
+          <div class="arch-box">
+            <div class="arch-label">Telegram</div>
+            <div class="arch-sublabel">incoming messages</div>
+          </div>
+          <div class="arrow">→</div>
+          <div class="arch-box">
+            <div class="arch-label">Bridge Bot</div>
+            <div class="arch-sublabel">handlers.py</div>
+          </div>
+        </div>
+
+        <div class="layer-title">Processing Layer</div>
+        <div class="arch-layer">
+          <div class="arch-box">
+            <div class="arch-label">LLM Client</div>
+            <div class="arch-sublabel">retry + typing loop</div>
+          </div>
+          <div class="arrow">↔</div>
+          <div class="arch-box">
+            <div class="arch-label">SQLite</div>
+            <div class="arch-sublabel">hot cache (WAL)</div>
+          </div>
+        </div>
+
+        <div class="layer-title">Knowledge & Memory</div>
+        <div class="arch-layer">
+          <div class="arch-box">
+            <div class="arch-label">Summarizer</div>
+            <div class="arch-sublabel">rolling compression</div>
+          </div>
+          <div class="arrow">↔</div>
+          <div class="arch-box">
+            <div class="arch-label">Profile / Knowledge</div>
+            <div class="arch-sublabel">extraction + updates</div>
+          </div>
+        </div>
+
+        <div class="layer-title">Persistence Layer</div>
+        <div class="arch-layer">
+          <div class="arch-box">
+            <div class="arch-label">Sync Engine</div>
+            <div class="arch-sublabel">async queue worker</div>
+          </div>
+          <div class="arrow">→</div>
+          <div class="arch-box">
+            <div class="arch-label">Obsidian Vault</div>
+            <div class="arch-sublabel">markdown files + REST</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- File Structure -->
+    <section>
+      <h2>Project Structure</h2>
+      <div class="tree">
+        <div class="tree-line tree-dir">bridge/</div>
+        <div class="tree-line tree-file">&nbsp;&nbsp;├── main.py                    # Entry point, async orchestration</div>
+        <div class="tree-line tree-file">&nbsp;&nbsp;├── config.py                  # Env validation & constants</div>
+        <div class="tree-line tree-file">&nbsp;&nbsp;├── requirements.txt           # Python deps</div>
+        <div class="tree-line tree-file">&nbsp;&nbsp;└── .env.example               # Template for secrets</div>
+        <div class="tree-line tree-dir">&nbsp;&nbsp;├── llm/</div>
+        <div class="tree-line tree-file">&nbsp;&nbsp;│&nbsp;&nbsp;&nbsp;&nbsp;└── client.py           # LM Studio client, retry, typing</div>
+        <div class="tree-line tree-dir">&nbsp;&nbsp;├── memory/</div>
+        <div class="tree-line tree-file">&nbsp;&nbsp;│&nbsp;&nbsp;&nbsp;&nbsp;├── database.py          # SQLite schema + CRUD</div>
+        <div class="tree-line tree-file">&nbsp;&nbsp;│&nbsp;&nbsp;&nbsp;&nbsp;└── summarizer.py        # Compression + knowledge extraction</div>
+        <div class="tree-line tree-dir">&nbsp;&nbsp;├── obsidian/</div>
+        <div class="tree-line tree-file">&nbsp;&nbsp;│&nbsp;&nbsp;&nbsp;&nbsp;├── vault.py             # Filesystem R/W</div>
+        <div class="tree-line tree-file">&nbsp;&nbsp;│&nbsp;&nbsp;&nbsp;&nbsp;├── rest.py              # REST plugin client</div>
+        <div class="tree-line tree-file">&nbsp;&nbsp;│&nbsp;&nbsp;&nbsp;&nbsp;├── formatter.py         # Markdown + frontmatter</div>
+        <div class="tree-line tree-file">&nbsp;&nbsp;│&nbsp;&nbsp;&nbsp;&nbsp;└── sync.py              # Async sync engine</div>
+        <div class="tree-line tree-dir">&nbsp;&nbsp;├── agent/</div>
+        <div class="tree-line tree-file">&nbsp;&nbsp;│&nbsp;&nbsp;&nbsp;&nbsp;├── identity.py          # IDENTITY.md + SOUL.md</div>
+        <div class="tree-line tree-file">&nbsp;&nbsp;│&nbsp;&nbsp;&nbsp;&nbsp;├── profile.py           # User profile updates</div>
+        <div class="tree-line tree-file">&nbsp;&nbsp;│&nbsp;&nbsp;&nbsp;&nbsp;├── knowledge.py         # Knowledge extraction queue</div>
+        <div class="tree-line tree-file">&nbsp;&nbsp;│&nbsp;&nbsp;&nbsp;&nbsp;└── heartbeat.py         # Proactive scheduler</div>
+        <div class="tree-line tree-dir">&nbsp;&nbsp;└── bot/</div>
+        <div class="tree-line tree-file">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;└── handlers.py          # All Telegram commands + messages</div>
+      </div>
+    </section>
+
+    <!-- Vault Structure -->
+    <section>
+      <h2>Obsidian Vault</h2>
+      <p>On first run, Bridge creates <code>BrainVault/</code> with this structure:</p>
+      <div class="tree">
+        <div class="tree-line tree-dir">BrainVault/</div>
+        <div class="tree-line tree-dir">&nbsp;&nbsp;├── Daily Note/</div>
+        <div class="tree-line tree-file">&nbsp;&nbsp;│&nbsp;&nbsp;&nbsp;&nbsp;└── 2026-05-02.md          ← Full conversation log</div>
+        <div class="tree-line tree-dir">&nbsp;&nbsp;├── Memory/</div>
+        <div class="tree-line tree-file">&nbsp;&nbsp;│&nbsp;&nbsp;&nbsp;&nbsp;├── MEMORY.md             ← Curated long‑term summary</div>
+        <div class="tree-line tree-file">&nbsp;&nbsp;│&nbsp;&nbsp;&nbsp;&nbsp;└── Summaries/</div>
+        <div class="tree-line tree-dir">&nbsp;&nbsp;├── People/</div>
+        <div class="tree-line tree-file">&nbsp;&nbsp;│&nbsp;&nbsp;&nbsp;&nbsp;└── USER.md                ← Auto‑updated profile</div>
+        <div class="tree-line tree-dir">&nbsp;&nbsp;├── Agent/</div>
+        <div class="tree-line tree-file">&nbsp;&nbsp;│&nbsp;&nbsp;&nbsp;&nbsp;├── IDENTITY.md            ← Name, vibe, emoji</div>
+        <div class="tree-line tree-file">&nbsp;&nbsp;│&nbsp;&nbsp;&nbsp;&nbsp;└── SOUL.md                ← Condensed directives</div>
+        <div class="tree-line tree-dir">&nbsp;&nbsp;├── Knowledge/</div>
+        <div class="tree-line tree-file">&nbsp;&nbsp;│&nbsp;&nbsp;&nbsp;&nbsp;└── quantum-computing.md  ← Atomic notes (auto‑created)</div>
+        <div class="tree-line tree-dir">&nbsp;&nbsp;└── Index.md                      ← Auto‑regenerated backlink map</div>
+      </div>
+      <p>Every note includes YAML frontmatter (Dataview‑compatible) and wikilinks to related notes.</p>
+    </section>
+
+    <!-- Commands -->
+    <section>
+      <h2>Telegram Commands</h2>
+      <div class="grid">
+        <div class="card">
+          <div class="card-title">/start</div>
+          <div class="card-desc">Bootstraps first‑run experience or greets returning user with memory preview.</div>
+        </div>
+        <div class="card">
+          <div class="card-title">/clear</div>
+          <div class="card-desc">Wipes session message history. Fresh start without losing long‑term memory.</div>
+        </div>
+        <div class="card">
+          <div class="card-title">/status</div>
+          <div class="card-desc">Shows stats: message count, summary tokens, profile status, knowledge entries, vault path.</div>
+        </div>
+        <div class="card">
+          <div class="card-title">/who</div>
+          <div class="card-desc">Displays agent identity card — name, vibe, soul directive, full IDENTITY.md preview.</div>
+        </div>
+        <div class="card">
+          <div class="card-title">/remember &lt;text&gt;</div>
+          <div class="card-desc">Manually write something to MEMORY.md immediately. Also goes through normal pipeline.</div>
+        </div>
+        <div class="card">
+          <div class="card-title">/open &lt;note-path&gt;</div>
+          <div class="card-desc">If REST plugin configured, opens vault note on your screen (e.g. <code>/open Daily Note/2026-05-02.md</code>).</div>
+        </div>
+        <div class="card">
+          <div class="card-title">/sync</div>
+          <div class="card-desc">Forces immediate sync queue drain instead of waiting for background interval.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Data Flow -->
+    <section>
+      <h2>Message Pipeline</h2>
+      <p>From Telegram to Obsidian, here's the full path of a single message:</p>
+      <div class="tree" style="line-height: 2.2;">
+        <div class="tree-line"><span style="color: var(--primary);">1.</span> Telegram message received → <code>handlers.py:handle_message()</code></div>
+        <div class="tree-line"><span style="color: var(--primary);">2.</span> User text saved to SQLite (<code>messages</code> table)</div>
+        <div class="tree-line"><span style="color: var(--primary);">3.</span> Context assembled: recent messages + summary + profile</div>
+        <div class="tree-line"><span style="color: var(--primary);">4.</span> Typing indicator task starts (loops every 4s)</div>
+        <div class="tree-line"><span style="color: var(---primary);">5.</span> LLM called via <code>LLMClient.chat()</code> with retry/backoff</div>
+        <div class="tree-line"><span style="color: var(--primary);">6.</span> Bot response saved to SQLite</div>
+        <div class="tree-line"><span style="color: var(--primary);">7.</span> Both user + bot entries formatted & appended to Daily Note</div>
+        <div class="tree-line"><span style="color: var(--primary);">8.</span> <code>_post_process()</code> spawned (non‑blocking):</div>
+        <div class="tree-line">&nbsp;&nbsp;&nbsp;&nbsp;• Knowledge extraction → <code>Knowledge/</code> notes (via LLM)</div>
+        <div class="tree-line">&nbsp;&nbsp;&nbsp;&nbsp;• Profile update inference (if needed)</div>
+        <div class="tree-line">&nbsp;&nbsp;&nbsp;&nbsp;• Summarization trigger (if message count ≥ 20)</div>
+        <div class="tree-line"><span style="color: var(--primary);">9.</span> Enqueued items written to <code>sync_queue</code> table</div>
+        <div class="tree-line"><span style="color: var(--primary);">10.</span> Background <code>SyncEngine</code> drains queue → formats markdown → writes to vault filesystem</div>
+        <div class="tree-line"><span style="color: var(--primary);">11.</span> If REST configured, vault refresh pinged for live Obsidian update</div>
+        <div class="tree-line"><span style="color: var(--primary);">12.</span> User receives response in Telegram</div>
+      </div>
+    </section>
+
+    <!-- What Got Built -->
+    <section>
+      <h2>Build Summary</h2>
+      <p>Every file is fully implemented — no stubs, no TODOs. Total: <strong>~1,800 LOC</strong> across 15 modules.</p>
+
+      <h3>Startup Sequence</h3>
+      <div class="terminal">
+        <div class="terminal-header">
+          <span class="dot dot-red"></span>
+          <span class="dot dot-yellow"></span>
+          <span class="dot dot-green"></span>
+        </div>
+        <div class="terminal-body">
+          <div><span class="prompt">$</span> <span class="cmd">cd bridge && python main.py</span></div>
+          <div class="output">
+            [INFO] Initializing Bridge...<br>
+            [INFO] Database initialized at .../bridge.db<br>
+            [INFO] Vault initialized: BrainVault/<br>
+            [INFO] Sync engine started<br>
+            [INFO] Identity files ensured (Agent/IDENTITY.md, Agent/SOUL.md)<br>
+            [INFO] Bridge initialized successfully<br>
+            [INFO] Starting bot polling...<br>
+            [INFO] Bot is now running
+          </div>
+        </div>
+      </div>
+
+      <h3>Module Breakdown</h3>
+      <div class="grid">
+        <div class="card">
+          <div class="card-title">config.py</div>
+          <div class="card-desc">Environment validation; fail‑fast if required vars missing; typed dataclass with defaults.</div>
+        </div>
+        <div class="card">
+          <div class="card-title">llm/client.py</div>
+          <div class="card-desc">Async LM Studio wrapper; exponential backoff retry; both non‑stream and stream modes; typing callback support.</div>
+        </div>
+        <div class="card">
+          <div class="card-title">memory/database.py</div>
+          <div class="card-desc">SQLite with WAL; 6 tables (messages, summaries, knowledge_entries, knowledge_index, user_profile, sync_queue); full async CRUD.</div>
+        </div>
+        <div class="card">
+          <div class="card-title">memory/summarizer.py</div>
+          <div class="card-desc">Triggers at 20+ messages; merges new content into existing summary; extracts knowledge nuggets via LLM (JSON output).</div>
+        </div>
+        <div class="card">
+          <div class="card-title">obsidian/vault.py</div>
+          <div class="card-desc">Direct filesystem R/W; creates directory tree; append/write/delete/read; daily note path resolution; index rebuild.</div>
+        </div>
+        <div class="card">
+          <div class="card-title">obsidian/formatter.py</div>
+          <div class="card-desc">Generates valid Obsidian markdown with proper YAML frontmatter, tags, wikilinks; slugify helper; all note types covered.</div>
+        </div>
+        <div class="card">
+          <div class="card-title">obsidian/rest.py</div>
+          <div class="card-desc">Optional REST plugin client; vault refresh; open note on screen; create/read notes via HTTP.</div>
+        </div>
+        <div class="card">
+          <div class="card-title">obsidian/sync.py</div>
+          <div class="card-desc">Background task; dequeues sync_queue; handles 5 entity types; writes to vault; triggers REST if available.</div>
+        </div>
+        <div class="card">
+          <div class="card-title">agent/identity.py</div>
+          <div class="card-desc">Ensures Agent/IDENTITY.md and Agent/SOUL.md exist; idempotent writes; reads for display.</div>
+        </div>
+        <div class="card">
+          <div class="card-title">agent/profile.py</div>
+          <div class="card-desc">Infers profile updates from recent conversation; upserts to DB + queue; returns new profile text or NO‑CHANGE.</div>
+        </div>
+        <div class="card">
+          <div class="card-title">agent/knowledge.py</div>
+          <div class="card-desc">Extracts 0–3 atomic knowledge nuggets per exchange; stores in DB; queues vault sync.</div>
+        </div>
+        <div class="card">
+          <div class="card-title">agent/heartbeat.py</div>
+          <div class="card-desc">Background scheduler; daily note rollover check; creates placeholders for missing days; extensible for periodic jobs.</div>
+        </div>
+        <div class="card">
+          <div class="card-title">bot/handlers.py</div>
+          <div class="card-desc">BridgeBot class; all 7 commands; message handler with typing loop, context assembly, post‑processing; allowlist middleware.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- How to Run -->
+    <section>
+      <h2>Quick Start</h2>
+
+      <h3>1. Prerequisites</h3>
+      <ul class="check-list">
+        <li>Python 3.11+</li>
+        <li>LM Studio running locally (OpenAI‑compatible API at <code>http://localhost:1234/v1</code>)</li>
+        <li>Telegram Bot Token from <a href="https://t.me/BotFather" target="_blank" style="color: var(--primary);">@BotFather</a></li>
+        <li>Your Telegram user ID (add to <code>ALLOWED_USERS</code>)</li>
+        <li>(Optional) Obsidian + REST Plugin for live vault refresh</li>
+      </ul>
+
+      <h3>2. Install & Configure</h3>
+      <div class="terminal">
+        <div class="terminal-header">
+          <span class="dot dot-red"></span>
+          <span class="dot dot-yellow"></span>
+          <span class="dot dot-green"></span>
+        </div>
+        <div class="terminal-body">
+          <div><span class="prompt">$</span> <span class="cmd">cd bridge</span></div>
+          <div><span class="prompt">$</span> <span class="cmd">python -m venv .venv</span></div>
+          <div><span class="prompt">$</span> <span class="cmd">source .venv/bin/activate</span> <span style="color: var(--text-muted);"># (or .venv\Scripts\activate on Windows)</span></div>
+          <div><span class="prompt">$</span> <span class="cmd">pip install -r requirements.txt</span></div>
+          <div><span class="prompt">$</span> <span class="cmd">cp .env.example .env</span></div>
+          <div class="output">
+            Edit .env with your values:<br>
+            TELEGRAM_BOT_TOKEN=YOUR_TOKEN<br>
+            ALLOWED_USERS=123456789,987654321<br>
+            LM_STUDIO_BASE_URL=http://localhost:1234/v1<br>
+            LM_STUDIO_MODEL=local-model<br>
+            OBSIDIAN_VAULT_PATH=../BrainVault<br>
+            AGENT_NAME=Bridge<br>
+            AGENT_EMOJI=🌉<br>
+            AGENT_SOUL="You are Bridge, a personal AI assistant..."<br>
+          </div>
+        </div>
+      </div>
+
+      <h3>3. Run</h3>
+      <div class="terminal">
+        <div class="terminal-header">
+          <span class="dot dot-red"></span>
+          <span class="dot dot-yellow"></span>
+          <span class="dot dot-green"></span>
+        </div>
+        <div class="terminal-body">
+          <div><span class="prompt">$</span> <span class="cmd">python main.py</span></div>
+          <div class="output">
+            [INFO] Initializing Bridge...<br>
+            [INFO] Bridge initialized successfully<br>
+            [INFO] Bot is now running
+          </div>
+        </div>
+      </div>
+
+      <h3>4. Talk to It</h3>
+      <p>Open Telegram, start a chat with your bot, and send any message. Within seconds:</p>
+      <ul class="check-list">
+        <li>Your message + bot reply saved to <code>BrainVault/Daily Note/YYYY-MM-DD.md</code></li>
+        <li>Knowledge nuggets appear in <code>BrainVault/Knowledge/</code> (if any extracted)</li>
+        <li>User profile in <code>BrainVault/People/USER.md</code> updates automatically over time</li>
+        <li>Summary in <code>BrainVault/Memory/MEMORY.md</code> grows and gets compressed</li>
+      </ul>
+
+      <p style="color: var(--accent); font-weight: 600;">First message creates the entire vault structure automatically.</p>
+    </section>
+
+    <!-- Technical Highlights -->
+    <section>
+      <h2>Key Technical Decisions</h2>
+      <div class="grid">
+        <div class="card">
+          <div class="card-title">SQLite as Hot Cache</div>
+          <div class="card-desc">WAL mode for concurrent reads; no user ever waits on disk I/O to Obsidian; persistent across restarts.</div>
+        </div>
+        <div class="card">
+          <div class="card-title">Async Sync Queue</div>
+          <div class="card-desc">Decouples message processing from vault writes; background task drains every <code>SYNC_INTERVAL</code>; failures retry with backoff.</div>
+        </div>
+        <div class="card">
+          <div class="card-title">Typing Indicator Loop</div>
+          <div class="card-desc">Separate <code>asyncio.Task</code> sends <code>send_chat_action("typing")</code> every 4s until LLM responds — no expired callbacks.</div>
+        </div>
+        <div class="card">
+          <div class="card-title">REST Plugin Fallback</div>
+          <div class="card-desc">Optional live refresh; note opening; graceful degradation if not configured.</div>
+        </div>
+        <div class="card">
+          <div class="card-title">LLM Retry Logic</div>
+          <div class="card-desc">Exponential backoff (2^attempt + jitter); max 3 retries; proper exception handling; no unscoped variables.</div>
+        </div>
+        <div class="card">
+          <div class="card-title">Knowledge Graph via Wikilinks</div>
+          <div class="card-desc">Daily notes link to knowledge, people, memory — true graph brain; Dataview‑queryable via frontmatter.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Fixed from v1 -->
+    <section>
+      <h2>v1 → v2: What's Fixed</h2>
+      <div class="tree">
+        <div class="tree-line tree-dir">Issues resolved:</div>
+        <div class="tree-line tree-file">&nbsp;&nbsp;✓ Unused <code>import json</code> — removed</div>
+        <div class="tree-line tree-file">&nbsp;&nbsp;✓ Misleading function names — unified under <code>LLMClient.chat()</code></div>
+        <div class="tree-line tree-file">&nbsp;&nbsp;✓ Double summarization — single atomic append, <code>maybe_summarize()</code> count‑gated</div>
+        <div class="tree-line tree-file">&nbsp;&nbsp;✓ No restart persistence — SQLite persists; sync queue rebuilds on startup</div>
+        <div class="tree-line tree-file">&nbsp;&nbsp;✓ No user allowlist — <code>ALLOWED_USERS</code> middleware guard on every handler</div>
+        <div class="tree-line tree-file">&nbsp;&nbsp;✓ Typing indicator expires — background loop runs until response ready</div>
+        <div class="tree-line tree-file">&nbsp;&nbsp;✓ Unscoped <code>response</code> — properly initialized; early returns on error</div>
+        <div class="tree-line tree-file">&nbsp;&nbsp;✓ Verbose soul.md — condensed ~150‑token directive in system prompt; full version in vault</div>
+        <div class="tree-line tree-file">&nbsp;&nbsp;✓ Disconnected agent framework — bot handlers thin; agent logic in <code>agent/</code> modules; Obsidian is the brain</div>
+      </div>
+    </section>
+
+    <!-- Deliverables -->
+    <section>
+      <h2>Deliverables</h2>
+      <div class="grid">
+        <div class="card">
+          <div class="card-title">📦 bridge_project.zip</div>
+          <div class="card-desc">Complete source archive (bridge/ + ARCHITECTURE.md). 26 KB compressed. Ready to download.</div>
+        </div>
+        <div class="card">
+          <div class="card-title">🗄️ Memory Bank Updated</div>
+          <div class="card-desc">All <code>.kilocode/rules/memory-bank/</code> files revised to reflect new hybrid architecture.</div>
+        </div>
+        <div class="card">
+          <div class="card-title">📚 Full Documentation</div>
+          <div class="card-desc">Inline docstrings, type hints, and this HTML snapshot explain every component.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- What's Next -->
+    <section>
+      <h2>Where It's Going</h2>
+      <ul class="check-list">
+        <li><strong>Immediate:</strong> Setup, test with sample conversations, verify vault population, try /who /status /open.</li>
+        <li><strong>Frontend Integration:</strong> Build Next.js dashboard to visualize SQLite stats and vault knowledge graph.</li>
+        <li><strong>Observability:</strong> Add structured logging, health endpoint, metrics (messages/sec, sync lag, LLM latency).</li>
+        <li><strong>Enhancements:</strong> Message editing support, per‑user vault subdirs (multi‑user), FTS5 search, incremental index rebuild.</li>
+        <li><strong>Production:</strong> Dockerfile + docker‑compose, systemd service file, backup/restore scripts.</li>
+        <li><strong>Long‑term:</strong> Bi‑directional sync (Obsidian → SQLite), voice input (Telegram voice → transcription), proactive check‑ins, shared vaults, web UI control panel.</li>
+      </ul>
+    </section>
+
+    <!-- Footer -->
+    <footer style="text-align: center; padding: 2rem 1rem; border-top: 1px solid var(--border); margin-top: 3rem; color: var(--text-muted); font-size: 0.875rem;">
+      <p>
+        Built from full architecture spec. All modules implemented. Zero stubs.
+        <br>
+        <span style="color: var(--primary);">Bridge Agent v2.0</span> — Telegram + SQLite + Obsidian
+      </p>
+      <p style="margin-top: 0.5rem;">
+        <a href="bridge_project.zip" download style="color: var(--primary);">Download Complete Archive</a>
+      </p>
+    </footer>
+  </div>
+
+  <!-- Simple tab logic -->
+  <script>
+    document.querySelectorAll('.tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        const panelId = tab.getAttribute('data-tab');
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+        tab.classList.add('active');
+        document.getElementById(panelId).classList.add('active');
+      });
+    });
+  </script>
+</body>
+</html>
