@@ -1,6 +1,10 @@
-# System Patterns: Next.js Starter Template
+# System Patterns: Hybrid Web + AI Agent Platform
 
 ## Architecture Overview
+
+This repository contains two integrated subsystems:
+
+### 1. Next.js Frontend (src/)
 
 ```
 src/
@@ -15,106 +19,77 @@ src/
     └── db/                 # Database files (add via recipe)
 ```
 
+Frontend is a standard Next.js 16 starter. It can serve as a dashboard to visualize the Obsidian vault or manage the agent if extended.
+
+### 2. Bridge Telegram Agent (bridge/)
+
+```
+bridge/
+├── main.py                        # Entry point
+├── config.py                      # Env validation & constants
+├── requirements.txt
+├── .env.example
+│
+├── llm/
+│   └── client.py                  # LM Studio client, typing indicator loop, retry
+│
+├── memory/
+│   ├── database.py                # SQLite: messages, summaries, knowledge, profile, sync queue
+│   └── summarizer.py              # Rolling compression + long-term knowledge extraction
+│
+├── obsidian/
+│   ├── vault.py                   # Filesystem R/W — primary interface
+│   ├── rest.py                    # REST API client — live refresh fallback
+│   ├── formatter.py               # Obsidian markdown: frontmatter, wikilinks, tags
+│   └── sync.py                    # Async orchestrator: SQLite → Obsidian
+│
+├── agent/
+│   ├── identity.py                # Agent IDENTITY.md & SOUL.md maintenance
+│   ├── profile.py                 # User profile auto‑updates
+│   ├── knowledge.py               # Topic/fact extraction → Knowledge/ notes
+│   └── heartbeat.py               # Scheduler: daily note rollover, periodic jobs
+│
+└── bot/
+    └── handlers.py                # Telegram command + message handlers (thin)
+```
+
+### Two‑Layer Memory Model
+
+```
+Telegram ──► Agent Runtime ──► SQLite (hot cache, fast R/W)
+                                    │
+                                    ▼ async sync
+                              Obsidian Vault (cold store, human‑readable)
+```
+
+- **SQLite**: real‑time operations; no user waits on file I/O.
+- **Obsidian**: async sync after each interaction; REST plugin ping for live refresh if available.
+- Filesystem first: Works even if Obsidian is closed; zero plugin dependency.
+
 ## Key Design Patterns
 
-### 1. App Router Pattern
+### Bridge Agent Patterns
 
-Uses Next.js App Router with file-based routing:
-```
-src/app/
-├── page.tsx           # Route: /
-├── about/page.tsx     # Route: /about
-├── blog/
-│   ├── page.tsx       # Route: /blog
-│   └── [slug]/page.tsx # Route: /blog/:slug
-└── api/
-    └── route.ts       # API Route: /api
-```
+#### 1. Two‑Layer Memory
+- Hot: SQLite WAL mode for concurrent reads/writes.
+- Cold: Markdown files in Obsidian vault with frontmatter and wikilinks.
 
-### 2. Component Organization Pattern (When Expanding)
+#### 2. Async Sync Queue
+- DB `sync_queue` table decouples message processing from vault writes.
+- Background task drains queue every few seconds; failures retry.
 
-```
-src/components/
-├── ui/                # Reusable UI components (Button, Card, etc.)
-├── layout/            # Layout components (Header, Footer)
-├── sections/          # Page sections (Hero, Features, etc.)
-└── forms/             # Form components
-```
+#### 3. Knowledge Extraction
+- After each exchange, LLM identifies atomic facts → stored as `Knowledge/<slug>.md`.
+- Enables true graph brain: daily notes link to knowledge notes, people, memory.
 
-### 3. Server Components by Default
+#### 4. Typing Indicator Loop
+- Background asyncio task sends `typing` action every ~4s until LLM responds.
 
-All components are Server Components unless marked with `"use client"`:
-```tsx
-// Server Component (default) - can fetch data, access DB
-export default function Page() {
-  return <div>Server rendered</div>;
-}
+#### 5. Agent as Bot
+- Bot handlers are thin; agent logic lives in `agent/` modules.
+- Identity, profile, knowledge, heartbeat each have single responsibility.
 
-// Client Component - for interactivity
-"use client";
-export default function Counter() {
-  const [count, setCount] = useState(0);
-  return <button onClick={() => setCount(c => c + 1)}>{count}</button>;
-}
-```
+### Next.js Patterns (unchanged from template)
 
-### 4. Layout Pattern
+*(The existing Next.js patterns remain — see below.)*
 
-Layouts wrap pages and can be nested:
-```tsx
-// src/app/layout.tsx - Root layout
-export default function RootLayout({ children }: { children: React.ReactNode }) {
-  return (
-    <html lang="en">
-      <body>{children}</body>
-    </html>
-  );
-}
-
-// src/app/dashboard/layout.tsx - Nested layout
-export default function DashboardLayout({ children }: { children: React.ReactNode }) {
-  return (
-    <div className="flex">
-      <Sidebar />
-      <main>{children}</main>
-    </div>
-  );
-}
-```
-
-## Styling Conventions
-
-### Tailwind CSS Usage
-- Utility classes directly on elements
-- Component composition for repeated patterns
-- Responsive: `sm:`, `md:`, `lg:`, `xl:`
-
-### Common Patterns
-```tsx
-// Container
-<div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-
-// Responsive grid
-<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-
-// Flexbox centering
-<div className="flex items-center justify-center">
-```
-
-## File Naming Conventions
-
-- Components: PascalCase (`Button.tsx`, `Header.tsx`)
-- Utilities: camelCase (`utils.ts`, `helpers.ts`)
-- Pages/Routes: lowercase (`page.tsx`, `layout.tsx`)
-- Directories: kebab-case (`api-routes/`) or lowercase (`components/`)
-
-## State Management
-
-For simple needs:
-- `useState` for local component state
-- `useContext` for shared state
-- Server Components for data fetching
-
-For complex needs (add when necessary):
-- Zustand for client state
-- React Query for server state

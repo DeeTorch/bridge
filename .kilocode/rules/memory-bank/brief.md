@@ -1,23 +1,32 @@
-# Project Brief: Next.js Starter Template
+# Project Brief: Hybrid Web + AI Agent Platform
 
 ## Purpose
 
-This is a minimal Next.js starter template designed for AI-assisted development. It provides a clean foundation that can be extended to build any type of web application through interaction with an AI assistant.
+This repository provides two complementary toolkits:
+
+1. **Next.js Starter Template** — A modern front‑end foundation with TypeScript and Tailwind CSS 4, optimized for AI‑assisted development.
+2. **Bridge Telegram Agent** — A Python service that runs a personal AI assistant accessible via Telegram, with automatic two‑layer memory (SQLite hot cache + Obsidian vault cold store).
+
+Together they form a full‑stack platform for building web UIs while maintaining a conversational AI that builds a second brain in your Obsidian vault.
 
 ## Target Users
 
 - Developers wanting a clean Next.js starting point
-- Users building applications through AI-assisted coding
+- Users building applications through AI‑assisted coding
 - Teams needing a standardized, modern Next.js setup
+- Individuals who want a personal AI assistant that writes to their notes
 
-## Core Use Case
+## Core Use Cases
 
-Users describe what they want to build to an AI assistant, which then expands this template by:
+### Frontend
+Users describe what they want to build to an AI assistant, which expands the Next.js template by adding pages, components, dependencies, and features using recipes.
 
-1. Adding components and pages as needed
-2. Installing additional dependencies
-3. Setting up databases, authentication, etc. using recipes
-4. Customizing styling and branding
+### Backend (Bridge)
+Users chat with the AI on Telegram; every exchange is:
+- Saved to SQLite for immediate context
+- Appended to a daily note in Obsidian
+- Analyzed for knowledge nuggets (stored as linked markdown notes)
+- Used to update a long‑term user profile and rolling summary
 
 ## Key Requirements
 
@@ -29,20 +38,30 @@ Users describe what they want to build to an AI assistant, which then expands th
 - ESLint for code quality
 - Clean, minimal starting structure
 - Bun as package manager
+- Python Bridge Agent (Telegram integration)
+- SQLite for realtime persistence
+- Obsidian vault for human‑readable storage
+- LM Studio compatibility (local LLM)
 
 ### Nice to Have
 
 - Recipe system for common additions (database, auth)
 - Memory bank for AI context persistence
-- Clear development guidelines
+- Obsidian REST plugin integration for live vault refresh
+- Proactive heartbeat (daily note creation, periodic summarization)
 
 ## Success Metrics
 
-- Clean, zero-error TypeScript setup
+- Clean, zero‑error TypeScript setup
 - Passing lint and type checks
+- Bridge agent starts reliably, connects to Telegram, responds
+- All messages saved to both SQLite and Obsidian within seconds
+- Knowledge graph grows with wikilinks and frontmatter
 
 ## Constraints
 
-- Minimal dependencies by default
+- Minimal dependencies by default (frontend)
 - Framework: Next.js 16 + React 19 + Tailwind CSS 4
-- Package manager: Bun
+- Package manager: Bun (frontend), pip (backend)
+- Python 3.11+ required for bridge
+

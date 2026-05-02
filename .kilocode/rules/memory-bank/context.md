@@ -1,87 +1,61 @@
-# Active Context: Next.js Starter Template
+# Active Context: Hybrid Web + AI Agent Platform
 
 ## Current State
 
-**Template Status**: ✅ Ready for development
+**Frontend (Next.js)**: ✅ Clean Next.js 16 + TypeScript + Tailwind CSS 4 starter ready for UI development.
 
-The template is a clean Next.js 16 starter with TypeScript and Tailwind CSS 4. It's ready for AI-assisted expansion to build any type of application.
+**Backend Agent (Bridge)**: ✅ Fully implemented Telegram bot with two-layer memory (SQLite + Obsidian vault). The agent:
+- Listens for Telegram messages
+- Maintains per-user conversation history in SQLite (hot cache)
+- Async-syncs to Obsidian vault (cold store) with rich markdown, wikilinks, frontmatter
+- Extracts knowledge nuggets and updates user profile automatically
+- Provides commands: /start, /clear, /status, /who, /remember, /open, /sync
+- Runs proactive heartbeat (daily note rollover, periodic summarization)
+
+**Observability**: Vault structure created under `BrainVault/` with Daily Notes, Memory, People, Agent, Knowledge.
+
+**Configuration**: Env-driven via `.env` (TELEGRAM_BOT_TOKEN, ALLOWED_USERS, LM_STUDIO_BASE_URL, OBSIDIAN_VAULT_PATH, optional REST plugin).
+
+**Integration Points**: Node front-end can later read from the same SQLite DB or vault for dashboard views.
 
 ## Recently Completed
 
-- [x] Base Next.js 16 setup with App Router
-- [x] TypeScript configuration with strict mode
-- [x] Tailwind CSS 4 integration
+- [x] Next.js 16 base setup with App Router, TypeScript strict mode, Tailwind CSS 4
 - [x] ESLint configuration
-- [x] Memory bank documentation
-- [x] Recipe system for common features
+- [x] Bridge Telegram agent fully implemented (see `bridge/` directory)
+  - LLM client with retry logic and typing indicator
+  - SQLite database layer (messages, summaries, knowledge, profile, sync queue)
+  - Summarizer (rolling compression + knowledge extraction)
+  - Obsidian vault operations, formatter, REST client
+  - Async sync engine processing SQLite → Obsidian
+  - Agent submodules: identity, profile, knowledge, heartbeat
+  - Telegram bot handlers with all commands
+- [x] Obsidian vault directory structure and base files created
 
 ## Current Structure
 
 | File/Directory | Purpose | Status |
 |----------------|---------|--------|
-| `src/app/page.tsx` | Home page | ✅ Ready |
-| `src/app/layout.tsx` | Root layout | ✅ Ready |
-| `src/app/globals.css` | Global styles | ✅ Ready |
+| `src/app/` | Next.js frontend (pending UI work) | ✅ Ready |
+| `bridge/` | Python Telegram bridge agent | ✅ Complete |
+| `BrainVault/` | Obsidian vault (SQLite at `bridge.db`) | ✅ Initialized |
 | `.kilocode/` | AI context & recipes | ✅ Ready |
 
 ## Current Focus
 
-The template is ready. Next steps depend on user requirements:
-
-1. What type of application to build
-2. What features are needed
-3. Design/branding preferences
-
-## Quick Start Guide
-
-### To add a new page:
-
-Create a file at `src/app/[route]/page.tsx`:
-```tsx
-export default function NewPage() {
-  return <div>New page content</div>;
-}
+The Bridge agent is operational and can be run with:
+```bash
+cd bridge
+bun install  # actually Python: pip install -r requirements.txt (or use venv)
+python main.py
 ```
 
-### To add components:
-
-Create `src/components/` directory and add components:
-```tsx
-// src/components/ui/Button.tsx
-export function Button({ children }: { children: React.ReactNode }) {
-  return <button className="px-4 py-2 bg-blue-600 text-white rounded">{children}</button>;
-}
-```
-
-### To add a database:
-
-Follow `.kilocode/recipes/add-database.md`
-
-### To add API routes:
-
-Create `src/app/api/[route]/route.ts`:
-```tsx
-import { NextResponse } from "next/server";
-
-export async function GET() {
-  return NextResponse.json({ message: "Hello" });
-}
-```
-
-## Available Recipes
-
-| Recipe | File | Use Case |
-|--------|------|----------|
-| Add Database | `.kilocode/recipes/add-database.md` | Data persistence with Drizzle + SQLite |
-
-## Pending Improvements
-
-- [ ] Add more recipes (auth, email, etc.)
-- [ ] Add example components
-- [ ] Add testing setup recipe
+Frontend development can proceed independently; optional future integration: read vault for live dashboard.
 
 ## Session History
 
 | Date | Changes |
 |------|---------|
-| Initial | Template created with base setup |
+| 2026-05-02 | Added Bridge Telegram agent: Python service with SQLite hot cache, async Obsidian sync, LLM client, summarization, knowledge extraction |
+| Initial | Next.js starter template created with base setup |
+
